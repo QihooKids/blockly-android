@@ -1,0 +1,46 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultPublishConfig 'liteRelease'
+
+    flavorDimensions 'blockly'
+    productFlavors {
+        full {
+            dimension 'blockly'
+        }
+        lite {
+            dimension 'blockly'
+        }
+    }
+}
+
+dependencies {
+    implementation deps.okhttp
+    implementation deps.lifecycle.viewmodel
+    implementation deps.lifecycle.livedata
+    api project(path: ':blocklylib-core')
+
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}

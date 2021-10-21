@@ -1,1 +1,3 @@
 include ':blocklylib-core', ':blocklydemo', ':blocklylib-vertical', ':blocklytest'
+include ':ailabtest'
+include ':qihooblocklylib'

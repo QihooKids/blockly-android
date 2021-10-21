@@ -1,0 +1,13 @@
+ext.deps = [:]
+ext.versions = [:]
+
+versions.okhttp = '4.9.0'
+versions.lifecycle = "2.2.0"
+
+
+deps.okhttp = "com.squareup.okhttp3:okhttp:$versions.okhttp"
+
+def lifecycle = [:]
+lifecycle.viewmodel = "androidx.lifecycle:lifecycle-viewmodel:$versions.lifecycle"
+lifecycle.livedata = "androidx.lifecycle:lifecycle-livedata:$versions.lifecycle"
+deps.lifecycle = lifecycle
