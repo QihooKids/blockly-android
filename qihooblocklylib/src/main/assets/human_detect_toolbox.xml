@@ -1,0 +1,25 @@
+<xml id="toolbox" style="display: none">
+  <category name="通用" colour="#5ba55b">
+    <block type="region_set"></block>
+    <block type="sensitive_high"></block>
+    <block type="sensitive_low"></block>
+    <block type="sensitive_medium"></block>
+    <block type="sensitive_select"></block>
+    <block type="sensitive_set"></block>
+    <block type="time_available1"></block>
+    <block type="time_available2"></block>
+    <block type="time_available3"></block>
+    <block type="time_available_select"></block>
+    <block type="time_duration_set"></block>
+    <block type="xy"></block>
+    <block type="ailab_root_block"></block>
+  </category>
+
+  <category name="技能" colour="#5ba44b">
+    <block type="human_detect"></block>
+  </category>
+
+  <category name="事件" colour="#5ba66b">
+    <block type="report_warning"></block>
+  </category>
+</xml>

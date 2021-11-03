@@ -1,8 +1,13 @@
 package com.qihoo.ailab.repo.i;
 
-import com.qihoo.ailab.model.AIRuleFileData;
+import com.qihoo.ailab.model.AIRuleFileUrl;
 
 public interface IBlockFileDataRepo {
 
-    AIRuleFileData getRuleFileData();
+    /**
+     * Get the rule files from the cache.
+     * @return
+     */
+    AIRuleFileUrl getRuleFileData();
+
 }

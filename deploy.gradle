@@ -1,0 +1,114 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+def id = 'rules'
+def dir_repo = "../repo"
+def type = "full"
+
+ext{
+    pomVersion = '1.0.0'
+    pomGroupID = "com.qihoo.ailab"
+    url = "../repo"
+}
+
+//android {
+//    buildTypes {
+//        distributable.initWith(buildTypes.release)
+//        distributable {
+//            minifyEnabled false
+//        }
+//    }
+//}
+
+//android.libraryVariants.all { variant ->
+//    if (variant.buildType.name == 'distributable') {
+//        if (variant.mappingFile != null) {
+//            tasks.create(name: "copyDistributableAarProguardMapping", type: Copy) {
+//                group "distribution"
+//                String today = new Date().format('yyyyMMdd_HHmmss')
+//                from variant.mappingFile.path
+//                rename '.*', "${project.name}_${today}_mapping.txt"
+//                into rootDir
+//            }
+//            bundleDistributable.finalizedBy copyDistributableAarProguardMapping
+//        }
+//    }
+//}
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+project.afterEvaluate {
+    publishing {
+
+        repositories {
+            maven {
+                url project.ext.url
+            }
+        }
+
+        publications {
+            liteRelease(MavenPublication) {
+                groupId project.ext.pomGroupID
+                artifactId project.name
+                version project.ext.pomVersion
+                artifact bundleFullReleaseAar
+//                artifact (sourceJar)
+                pom.withXml {
+                    final dependenciesNode = asNode().appendNode('dependencies')
+                    ext.addDependency = { Dependency dep, String scope ->
+                        if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified")
+                            return // invalid dependencies should be ignored
+
+                        final dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('artifactId', dep.name)
+                        if (dep.version == 'unspecified') {
+                            dependencyNode.appendNode('groupId', project.ext.pomGroupID)
+                            dependencyNode.appendNode('version', project.ext.pomVersion)
+                        } else {
+                            dependencyNode.appendNode('groupId', dep.group)
+                            dependencyNode.appendNode('version', dep.version)
+                        }
+
+                        def artifactsList = dep.properties['artifacts']
+                        if (artifactsList != null && artifactsList.size() > 0) {
+                            final artifact = artifactsList[0]
+                            dependencyNode.appendNode('type', artifact.getType())
+                        }
+                        dependencyNode.appendNode('scope', scope)
+
+                        if (!dep.transitive) {
+                            // In case of non transitive dependency, all its dependencies should be force excluded from them POM file
+                            final exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+                            exclusionNode.appendNode('groupId', '*')
+                            exclusionNode.appendNode('artifactId', '*')
+                        } else if (!dep.properties.excludeRules.empty) {
+                            // For transitive with exclusions, all exclude rules should be added to the POM file
+                            final exclusions = dependencyNode.appendNode('exclusions')
+                            dep.properties.excludeRules.each { ExcludeRule rule ->
+                                final exclusionNode = exclusions.appendNode('exclusion')
+                                exclusionNode.appendNode('groupId', rule.group ?: '*')
+                                exclusionNode.appendNode('artifactId', rule.module ?: '*')
+                            }
+                        }
+                    }
+                    configurations.api.getDependencies().each { dep -> addDependency(dep, "compile") }
+                    configurations.implementation.getDependencies().each { dep -> addDependency(dep, "runtime")
+                    }
+
+                }
+
+            }
+        }
+
+    }
+}
+
+task blockAar(type: GradleBuild) {
+    tasks = ['clean', 'build', 'publish']
+}
+
+
+

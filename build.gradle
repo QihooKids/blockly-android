@@ -2,18 +2,17 @@
 
 apply from: 'versions.gradle'
 
+
 buildscript {
     repositories {
+        maven{url uri("$rootDir/repo")}
         jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.android.tools.build:gradle:3.6.4'
+//        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+//        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -22,6 +21,7 @@ buildscript {
 
 allprojects {
     repositories {
+        maven{url uri("$rootDir/repo")}
         jcenter()
         maven {
             url "https://maven.google.com"
@@ -34,6 +34,7 @@ allprojects {
         }
     }
 
-
     apply plugin: 'checkstyle'
+
 }
+

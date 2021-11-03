@@ -114,4 +114,20 @@ tasks.withType(JavaCompile) { compileTask ->
 //    // options.encoding = 'UTF-8'
 //}
 
-apply from: 'deploy.gradle'
+apply from: '../deploy.gradle'
+
+android {
+    buildTypes {
+        distributable.initWith(buildTypes.release)
+        distributable {
+            minifyEnabled false
+        }
+    }
+}
+
+task block_core_clean {
+}
+block_core_clean.dependsOn(clean)
+task block_core_build {}
+block_core_build.dependsOn(block_core_clean)
+block_core_build.dependsOn(build)

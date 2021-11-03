@@ -1,0 +1,20 @@
+{
+  "type": "time_available3",
+  "message0": "%1 %2",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "title",
+      "text": "夜晚警戒"
+    },
+    {
+      "type": "field_input",
+      "name": "des",
+      "text": "20:00-次日8:00"
+    }
+  ],
+  "output": "time_available",
+  "colour": 230,
+  "tooltip": "",
+  "helpUrl": ""
+}

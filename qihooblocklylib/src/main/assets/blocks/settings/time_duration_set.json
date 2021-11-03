@@ -1,0 +1,35 @@
+{
+  "type": "time_duration_set",
+  "message0": " %1 %2 时 %3 分 至 %4 时 %5",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "title",
+      "text": "自定义时间段"
+    },
+    {
+      "type": "field_input",
+      "name": "hour_s",
+      "text": "10"
+    },
+    {
+      "type": "field_input",
+      "name": "min_s",
+      "text": "30"
+    },
+    {
+      "type": "field_input",
+      "name": "hour_e",
+      "text": "10"
+    },
+    {
+      "type": "field_input",
+      "name": "min_e",
+      "text": "30"
+    }
+  ],
+  "output": "time_available",
+  "colour": 230,
+  "tooltip": "",
+  "helpUrl": ""
+}

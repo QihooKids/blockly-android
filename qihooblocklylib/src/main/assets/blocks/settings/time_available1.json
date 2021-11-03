@@ -1,0 +1,20 @@
+{
+  "type": "time_available1",
+  "message0": "%1 %2",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "title",
+      "text": "全天警戒"
+    },
+    {
+      "type": "field_input",
+      "name": "des",
+      "text": "24小时"
+    }
+  ],
+  "output": "time_available",
+  "colour": 230,
+  "tooltip": "",
+  "helpUrl": ""
+}

@@ -54,4 +54,4 @@ task sourcesJar(type: Jar) {
 //    // options.encoding = 'UTF-8'
 //}
 
-apply from: 'deploy.gradle'
+//apply from: 'deploy.gradle'

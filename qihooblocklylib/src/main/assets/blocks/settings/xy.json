@@ -1,0 +1,27 @@
+{
+  "type": "xy",
+  "message0": "输入X坐标 %1 Y坐标 %2 %3",
+  "args0": [
+    {
+      "type": "field_number",
+      "name": "x",
+      "value": 0,
+      "precision": 1
+    },
+    {
+      "type": "field_number",
+      "name": "y",
+      "value": 0,
+      "precision": 1
+    },
+    {
+      "type": "input_value",
+      "name": "xy",
+      "check": "xy"
+    }
+  ],
+  "output": "xy",
+  "colour": 230,
+  "tooltip": "单个坐标点xy的位置",
+  "helpUrl": ""
+}

@@ -1,0 +1,356 @@
+[
+  {
+    "type": "report_warning",
+    "message0": "%1 %2 %3",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "警报消息推送"
+      },
+      {
+        "type": "field_input",
+        "name": "des",
+        "text": "推送提示消息"
+      },
+      {
+        "type": "field_checkbox",
+        "name": "check",
+        "checked": true
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "result_run_rule",
+    "message0": "执行规则下一个 %1",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "rule_id",
+        "text": "1002"
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "region_set",
+    "message0": "%1 %2 %3 %4",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "侦测区域"
+      },
+      {
+        "type": "field_input",
+        "name": "des",
+        "text": "可以设置重点关注的区域"
+      },
+      {
+        "type": "input_value",
+        "name": "xy_arrays",
+        "check": "xy"
+      },
+      {
+        "type": "input_dummy"
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "sensitive_high",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "高"
+      }
+    ],
+    "output": "sensitive",
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "sensitive_low",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "低"
+      }
+    ],
+    "output": "sensitive",
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "sensitive_medium",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "中"
+      }
+    ],
+    "output": "sensitive",
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "sensitive_select",
+    "message0": "%1 %2",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "灵敏度配置"
+      },
+      {
+        "type": "input_value",
+        "name": "select",
+        "check": "sensitive"
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "sensitive_set",
+    "message0": "选择识别灵敏度 %1",
+    "args0": [
+      {
+        "type": "field_dropdown",
+        "name": "sensitive_select",
+        "options": [
+          [
+            "高",
+            "1"
+          ],
+          [
+            "中",
+            "2"
+          ],
+          [
+            "低",
+            "3"
+          ]
+        ]
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "time_available1",
+    "message0": "%1 %2",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "全天警戒"
+      },
+      {
+        "type": "field_input",
+        "name": "des",
+        "text": "24小时"
+      }
+    ],
+    "output": "time_available",
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "time_available2",
+    "message0": "%1 %2",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "白天警戒"
+      },
+      {
+        "type": "field_input",
+        "name": "des",
+        "text": "8:00-20:00"
+      }
+    ],
+    "output": "time_available",
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "time_available3",
+    "message0": "%1 %2",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "夜晚警戒"
+      },
+      {
+        "type": "field_input",
+        "name": "des",
+        "text": "20:00-次日8:00"
+      }
+    ],
+    "output": "time_available",
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "time_available_select",
+    "message0": " %1 %2 ",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "智能看护时间段"
+      },
+      {
+        "type": "input_value",
+        "name": "select",
+        "check": "time_available"
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "time_duration_set",
+    "message0": " %1 %2 时 %3 分 至 %4 时 %5",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "自定义时间段"
+      },
+      {
+        "type": "field_input",
+        "name": "hour_s",
+        "text": "10"
+      },
+      {
+        "type": "field_input",
+        "name": "min_s",
+        "text": "30"
+      },
+      {
+        "type": "field_input",
+        "name": "hour_e",
+        "text": "10"
+      },
+      {
+        "type": "field_input",
+        "name": "min_e",
+        "text": "30"
+      }
+    ],
+    "output": "time_available",
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "xy",
+    "message0": "输入X坐标 %1 Y坐标 %2 %3",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "x",
+        "value": 0
+      },
+      {
+        "type": "field_number",
+        "name": "y",
+        "value": 0
+      },
+      {
+        "type": "input_value",
+        "name": "xy",
+        "check": "xy"
+      }
+    ],
+    "output": "xy",
+    "colour": 230,
+    "tooltip": "单个坐标点xy的位置",
+    "helpUrl": ""
+  },
+  {
+    "type": "human_detect",
+    "message0": "%1 %2 %3",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "title",
+        "text": "人形检测"
+      },
+      {
+        "type": "field_input",
+        "name": "des",
+        "text": "针对有人出现的情况进行报警"
+      },
+      {
+        "type": "field_checkbox",
+        "name": "check",
+        "checked": true
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "ailab_root_block",
+    "message0": "添加AI识别配置 %1 添加需要执行的技能 %2 如果技能执行成功那么执行 %3",
+    "args0": [
+      {
+        "type": "input_statement",
+        "name": "ai_setttings"
+      },
+      {
+        "type": "input_statement",
+        "name": "ai_functions"
+      },
+      {
+        "type": "input_statement",
+        "name": "ai_events"
+      }
+    ],
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  }
+]

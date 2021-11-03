@@ -1,8 +1,6 @@
 package com.qihoo.ailab.util;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -14,24 +12,32 @@ import com.google.blockly.android.control.BlocklyController;
 import com.google.blockly.model.Block;
 import com.google.blockly.model.BlockFactory;
 import com.google.blockly.model.BlockTemplate;
+import com.google.blockly.model.BlocklyCategory;
+import com.google.blockly.model.BlocklyEvent;
 import com.google.blockly.model.BlocklySerializerException;
+import com.google.blockly.model.Field;
+import com.google.blockly.model.FieldInput;
+import com.google.blockly.model.FieldLabel;
+import com.google.blockly.model.FieldNumber;
 import com.google.blockly.model.IOOptions;
+import com.google.blockly.model.Input;
+import com.google.blockly.utils.BlockFileUtil;
 import com.google.blockly.utils.BlockLoadingException;
 import com.google.blockly.utils.BlocklyXmlHelper;
 import com.google.blockly.utils.StringOutputStream;
+import com.qihoo.ailab.TextType;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NUIBlockHelper {
-
 
     private static final String TAG = NUIBlockHelper.class.getSimpleName();
 
@@ -64,7 +70,7 @@ public class NUIBlockHelper {
         initBlockDefinitions(jsonDefinitions);
         mJsonDefinitionsPaths = jsonDefinitions;
         mCodeGeneratorLanguage = LanguageDefinition.LUA_LANGUAGE_DEFINITION;
-        mGeneratorsJsPaths = generatorsJsPaths;
+        mGeneratorsJsPaths = new ArrayList<>(generatorsJsPaths);
     }
 
     public void onResume(){
@@ -79,12 +85,13 @@ public class NUIBlockHelper {
      * Generate the lua code.
      * @param codeGenerationCallback
      */
-    public void requestCodeGeneration(
+    public void requestCodeGeneration(Block root,
             CodeGenerationRequest.CodeGeneratorCallback codeGenerationCallback) {
 
         final StringOutputStream serialized = new StringOutputStream();
         try {
-            mController.getWorkspace().serializeToXml(serialized);
+//            mController.getWorkspace().serializeToXml(serialized);
+            BlocklyXmlHelper.writeToXml(Arrays.asList(root), serialized, IOOptions.WRITE_ALL_DATA);
         } catch (BlocklySerializerException e) {
             // Not using a string resource because no non-developer should see this.
             String msg = "Failed to serialize workspace during code generation.";
@@ -134,7 +141,7 @@ public class NUIBlockHelper {
             BlocklyXmlHelper.writeToXml(list, outputStream, IOOptions.WRITE_ALL_DATA);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (BlocklySerializerException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if(outputStream != null){
@@ -148,22 +155,35 @@ public class NUIBlockHelper {
 
     }
 
+    public BlocklyCategory loadToolbox(String path){
+        InputStream inputStream = null;
+        try {
+            inputStream = BlockFileUtil.openFile(mContext, path);
+            return BlocklyXmlHelper.loadToolboxFromXml(inputStream, mBlockFactory, BlocklyEvent.WORKSPACE_ID_TOOLBOX);
+        } catch (BlockLoadingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * Load the root block for rules config.Only one root block for the business.
      * @param path The workspace xml file path.
      * @return The root block.
      */
-
-
     public Block loadWorkspace(String path){
         InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(path);
+            inputStream = BlockFileUtil.openFile(mContext, path);
             List<Block> newBlocks = BlocklyXmlHelper.loadFromXml(inputStream, mBlockFactory);
             if(newBlocks.size() > 0) {
                 return newBlocks.get(0);
             }
         } catch (FileNotFoundException | BlockLoadingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if(inputStream != null){
@@ -216,10 +236,8 @@ public class NUIBlockHelper {
 
     /**
      * Loads a Workspace state from an Android {@link Bundle}, previous saved in
-     * {@link #onSaveSnapshot(Bundle)}.
      *
-     * @param savedInstanceState The activity state Bundle passed into {@link Activity#onCreate} or
-     *                           {@link Activity#onRestoreInstanceState}.
+     * @param savedInstanceState
      * @return RootBlock if a Blockly state was found and successfully loaded into the Controller.
      *         Otherwise, null.
      */
@@ -259,21 +277,12 @@ public class NUIBlockHelper {
     private void initBlockDefinitions(List<String> jsonDefinitions) {
         mBlockFactory.clear();
         String assetPath = null;
-        AssetManager assets = mContext.getAssets();
         InputStream inputStream = null;
         try {
             if (jsonDefinitions != null) {
                 for (String path : jsonDefinitions) {
                     assetPath = path;
-                    if(!path.startsWith(FILE_BASE)){
-                        inputStream = assets.open(path);
-                    } else if(path.startsWith(ASSET_BASE)) {
-                        String absPath = path.substring(ASSET_BASE.length());
-                        inputStream = assets.open(absPath);
-                    } else if(path.startsWith(FILE_BASE)){
-                        String absPath = path.substring(FILE_BASE.length());
-                        inputStream = new FileInputStream(absPath);
-                    }
+                    inputStream = BlockFileUtil.openFile(mContext, path);
                     if(inputStream != null){
                         mBlockFactory.addJsonDefinitions(inputStream);
                     }
@@ -294,4 +303,48 @@ public class NUIBlockHelper {
             }
         }
     }
+
+    public static void setNumber(Block block, String key, double num) {
+        if(block != null) {
+            Field field = block.getFieldByName(key);
+            if(field instanceof FieldNumber){
+                FieldNumber number = (FieldNumber) field;
+                number.setValue(num);
+                L.d(TAG, "FieldNumber value:"+number.getValue());
+            }
+        }
+    }
+
+    public static String getText(@TextType String key, Block block) {
+        if (block != null) {
+            Field field = block.getFieldByName(key);
+            if (field != null) {
+                if (field instanceof FieldInput) {
+                    return ((FieldInput) field).getText();
+                } else if (field instanceof FieldLabel) {
+                    return ((FieldLabel) field).getText();
+                }
+            }
+        }
+        return "";
+    }
+
+    public static String getText(@TextType String key, Input input) {
+        if (input != null) {
+            List<Field> fields = input.getFields();
+            if (fields != null) {
+                for (Field field : fields) {
+                    if (key.equals(field.getName())) {
+                        if (field instanceof FieldInput) {
+                            return ((FieldInput) field).getText();
+                        } else if (field instanceof FieldLabel) {
+                            return ((FieldLabel) field).getText();
+                        }
+                    }
+                }
+            }
+        }
+        return "";
+    }
+
 }

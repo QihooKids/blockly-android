@@ -30,6 +30,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.google.blockly.utils.BlockFileUtil;
 import com.google.blockly.utils.LangUtils;
 
 import org.json.JSONArray;
@@ -288,8 +289,7 @@ public class CodeGeneratorService extends Service {
     private String loadAssetAsUtf8(String filename) throws IOException {
         InputStream input = null;
         try {
-            input = getAssets().open(filename);
-
+            input = BlockFileUtil.openFile(getApplicationContext(), filename);
             int size = input.available();
             byte[] buffer = new byte[size];
             input.read(buffer);

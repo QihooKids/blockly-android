@@ -2,6 +2,7 @@ package com.qihoo.ailab.repo.blockfile;
 
 import android.content.Context;
 
+import com.qihoo.ailab.model.AIRule;
 import com.qihoo.ailab.repo.blockfile.i.IPathGenerator;
 import com.qihoo.ailab.util.MD5Utils;
 
@@ -11,10 +12,13 @@ import java.util.UUID;
 public class BlockFilePathGenerator implements IPathGenerator {
 
     private final Context mContext;
+    private final File mBase;
     private String PATH = "block_rules";
 
-    public BlockFilePathGenerator(Context context){
+    public BlockFilePathGenerator(Context context, AIRule rule){
         this.mContext = context.getApplicationContext();
+        this.PATH = PATH+"/"+rule.getId();
+        this.mBase = mContext.getExternalCacheDir();
     }
 
     @Override
@@ -26,7 +30,7 @@ public class BlockFilePathGenerator implements IPathGenerator {
                 builder.append(arg);
             }
         }
-        File path = new File(mContext.getFilesDir(), builder.toString());
+        File path = new File(mBase, builder.toString());
         if(!path.exists()){
             path.mkdirs();
         }
@@ -42,6 +46,11 @@ public class BlockFilePathGenerator implements IPathGenerator {
         for (String arg : args){
             builder.append(arg);
         }
-        return MD5Utils.encode(builder.toString());
+        return builder.toString();
+    }
+
+    @Override
+    public File generateFilePath(String name) {
+        return new File(pathDir(), fileName(name));
     }
 }

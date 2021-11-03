@@ -1,0 +1,21 @@
+{
+  "type": "ailab_root_block",
+  "message0": "添加AI识别配置 %1 添加需要执行的技能 %2 如果技能执行成功那么执行 %3",
+  "args0": [
+    {
+      "type": "input_statement",
+      "name": "ai_setttings"
+    },
+    {
+      "type": "input_statement",
+      "name": "ai_functions"
+    },
+    {
+      "type": "input_statement",
+      "name": "ai_events"
+    }
+  ],
+  "colour": 230,
+  "tooltip": "",
+  "helpUrl": ""
+}

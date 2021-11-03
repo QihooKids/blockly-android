@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rule_edit">规则编辑</string>
+    <string name="rule_common_settings">通用配置</string>
+    <string name="ai_run_result_deps">如果满足</string>
+    <string name="exe_event">那么执行</string>
+</resources>

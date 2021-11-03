@@ -1,0 +1,68 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="ailab_root_block" id="WruY]lSMb08e:y#V^aPd" x="53" y="128">
+    <statement name="ai_setttings">
+      <block type="time_available_select" id="A[S@E_[jL5S`7^z_.,^i">
+        <value name="select">
+          <block type="time_available1" id="raBuR[1xzj13U(X9G(?(">
+            <field name="title">白天警戒</field>
+            <field name="des">8:00-20:00</field>
+          </block>
+        </value>
+        <next>
+          <block type="sensitive_select" id="NB*!26GN[P2@%.svhP4c">
+            <field name="title">灵敏度配置</field>
+            <value name="select">
+              <block type="sensitive_high" id="{V7}zE8qFv66lFsJ^w~V">
+                <field name="title">高</field>
+              </block>
+            </value>
+            <next>
+              <block type="region_set" id="Rcy.Mo)a#4=P%hv#y1[!">
+                <field name="title">侦测区域</field>
+                <field name="des">可以设置重点关注的区域</field>
+                <value name="xy_arrays">
+                  <block type="xy" id="LhVu3:`~_[,IdMNgJR`(">
+                    <field name="x">0</field>
+                    <field name="y">0</field>
+                    <value name="xy">
+                      <block type="xy" id="G;15G_+UMZCrcdDa@0UK">
+                        <field name="x">0</field>
+                        <field name="y">1</field>
+                        <value name="xy">
+                          <block type="xy" id="bHYwr0ofADZ/e(6YHIm9">
+                            <field name="x">1</field>
+                            <field name="y">1</field>
+                            <value name="xy">
+                              <block type="xy" id="Po(b)*C%RcuZI-fdnOyo">
+                                <field name="x">1</field>
+                                <field name="y">0</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="ai_functions">
+      <block type="human_detect" id="_$Dz)LfN4t5eXR](3;?7">
+        <field name="title">人形检测</field>
+        <field name="des">针对有人出现的情况进行报警</field>
+        <field name="check">TRUE</field>
+      </block>
+    </statement>
+    <statement name="ai_events">
+      <block type="report_warning" id="-)IMf)BS4Gs92Gs?_;kQ">
+        <field name="title">警报消息推送</field>
+        <field name="des">推送提示消息</field>
+        <field name="check">TRUE</field>
+      </block>
+    </statement>
+  </block>
+</xml>

@@ -1,0 +1,26 @@
+{
+  "type": "report_warning",
+  "message0": "%1 %2 %3",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "title",
+      "text": "警报消息推送"
+    },
+    {
+      "type": "field_input",
+      "name": "des",
+      "text": "推送提示消息"
+    },
+    {
+      "type": "field_checkbox",
+      "name": "check",
+      "checked": true
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 230,
+  "tooltip": "",
+  "helpUrl": ""
+}
