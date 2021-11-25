@@ -20,30 +20,6 @@
               <block type="region_set" id="Rcy.Mo)a#4=P%hv#y1[!">
                 <field name="title">侦测区域</field>
                 <field name="des">可以设置重点关注的区域</field>
-                <value name="xy_arrays">
-                  <block type="xy" id="LhVu3:`~_[,IdMNgJR`(">
-                    <field name="x">0</field>
-                    <field name="y">0</field>
-                    <value name="xy">
-                      <block type="xy" id="G;15G_+UMZCrcdDa@0UK">
-                        <field name="x">0</field>
-                        <field name="y">1</field>
-                        <value name="xy">
-                          <block type="xy" id="bHYwr0ofADZ/e(6YHIm9">
-                            <field name="x">1</field>
-                            <field name="y">1</field>
-                            <value name="xy">
-                              <block type="xy" id="Po(b)*C%RcuZI-fdnOyo">
-                                <field name="x">1</field>
-                                <field name="y">0</field>
-                              </block>
-                            </value>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                  </block>
-                </value>
               </block>
             </next>
           </block>

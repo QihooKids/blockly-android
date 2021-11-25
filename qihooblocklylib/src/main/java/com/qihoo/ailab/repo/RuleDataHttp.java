@@ -39,9 +39,11 @@ public class RuleDataHttp implements IBlockFileDataRepo {
             try {
                 inputStream = mContext.getAssets().open("human_detect_toolbox.xml");
                 FileUtils.copyToFileOrThrow(inputStream, new File(toolbox));
-
-                inputStream = mContext.getAssets().open("human_detect_rule.xml");
-                FileUtils.copyToFileOrThrow(inputStream, new File(workspace));
+                File rule = new File(workspace);
+                if (!rule.exists()){
+                    inputStream = mContext.getAssets().open("human_detect_rule.xml");
+                    FileUtils.copyToFileOrThrow(inputStream, rule);
+                }
 
                 inputStream = mContext.getAssets().open("human_detect_blocks.json");
                 FileUtils.copyToFileOrThrow(inputStream, new File(blocks));

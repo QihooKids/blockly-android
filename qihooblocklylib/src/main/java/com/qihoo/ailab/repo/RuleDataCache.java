@@ -43,6 +43,6 @@ public class RuleDataCache implements IBlockFileDataRepo {
     }
 
     private boolean isExists(String toolbox) {
-        return new File(toolbox).exists();
+        return false;//new File(toolbox).exists();
     }
 }

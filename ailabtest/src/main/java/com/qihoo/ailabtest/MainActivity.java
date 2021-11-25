@@ -32,9 +32,9 @@ public class MainActivity extends Activity {
         checkPm();
         ruleRct = new AIRuleUIReactive(this, AIRule.test());
         ruleRct.load();
-        ruleRct.onClickCheck("", "report_warning", false);
+//        ruleRct.onClickCheck("", "report_warning", false);
         ruleRct.onBlockSelectedTitle("","sensitive_select", "低");
-        ruleRct.onRegionData("","region_set","[{\"x\":0.11231,\"y\":0.1},{\"x\":0.1232131,\"y\":0.1},{\"x\":0.1123123,\"y\":0.1}],[{\"x\":0.1,\"y\":0.1},{\"x\":0.1,\"y\":0.1},{\"x\":0.1,\"y\":0.1}]");
+        ruleRct.onRegionData("Rcy.Mo)a#4=P%hv#y1[!","region_set","[[{\"x\":0.3,\"y\":0.3},{\"x\":0.7,\"y\":0.3},{\"x\":0.7,\"y\":0.7},{\"x\":0.3,\"y\":0.7}]]");
         log(ruleRct.getRuleSettingsJson());
 
         log(ruleRct.getWorkBlockTypes());

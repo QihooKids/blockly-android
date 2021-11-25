@@ -6,9 +6,9 @@ def dir_repo = "../repo"
 def type = "full"
 
 ext{
-    pomVersion = '1.0.0'
+    pomVersion = '1.0.16'
     pomGroupID = "com.qihoo.ailab"
-    url = "../repo"
+    url = "/home/niu/research/smarthome/smarthome-flutter/packages/feature_qhblockly/android/repo" //"../repo"
 }
 
 //android {
@@ -106,9 +106,6 @@ project.afterEvaluate {
     }
 }
 
-task blockAar(type: GradleBuild) {
-    tasks = ['clean', 'build', 'publish']
-}
 
 
 

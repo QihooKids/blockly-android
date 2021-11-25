@@ -3,18 +3,18 @@
 Blockly.Lua['time_available_select'] = function(block) {
   var value_select = Blockly.Lua.valueToCode(block, 'select', Blockly.Lua.ORDER_ATOMIC);
   var time_available = Blockly.Lua.provideFunction_("time_available", [
-  "function " + Blockly.Lua.FUNCTION_NAME_PLACEHOLDER_ + "(start, end)",
+  "function " + Blockly.Lua.FUNCTION_NAME_PLACEHOLDER_ + "(start, en)",
   "  local hour = tonumber(os.date(\"%H\"))",
   "  local min = tonumber(os.date(\"%M\"))",
   "  local time = hour*60 + min",
-  "  if end <= start then",
-  "    condition = condition and (time <= start or time >= end)",
+  "  if en <= start then",
+  "    condition = condition and (time <= start or time >= en)",
   "  else",
-  "    condition = condition and (time >= start or time <= end)",
+  "    condition = condition and (time >= start or time <= en)",
   "  end",
   "end"]
   ),
-  code = time_available+'('+value_select+")"+'\n';
+  code = time_available+value_select+'\n';
   return code;
 };
 Blockly.Lua['ailab_root_block'] = function(block) {
@@ -23,30 +23,51 @@ Blockly.Lua['ailab_root_block'] = function(block) {
   var statements_ai_events = Blockly.Lua.statementToCode(block, 'ai_events');
   var and =
   '    if not value then\n'+
-  '      return';
+  '      return ret\n'+
+  '    end'
+  ;
 
   var or =
    '    if value then\n'+
-   '      break';
+   '      break\n'+
+   '    end \n'
+   ;
 
   var code =
   'detect_ret = {}'+'\n'+
   'ret = ""'+'\n' +
   'condition = true'+'\n' +
-  'region = {{{0,0},{1,0},{1,1},{0,1}}}'+'\n' +
+  'region = {}'+'\n' +
   'sensitive = 0.5'+'\n' +
   'skill_ret = {}'+'\n' +
+  'function reset()'+'\n' +
+  '  detect_ret = {}'+'\n'+
+  '  ret = ""'+'\n' +
+  '  condition = true'+'\n' +
+  '  region = {}'+'\n' +
+  '  sensitive = 0.5'+'\n' +
+  '  skill_ret = {}'+'\n' +
+  'end'+'\n' +
   'function rule(detect_json)'+'\n' +
+  '  reset()'+'\n' +
   '  detect_ret = cjson.decode(detect_json)'+'\n' +
   statements_ai_setttings+'\n'+
+  '  print("blockly condition...",condition)\n'+
   '  if not condition then\n'+
-  '    return'+'\n' +
+  '    print("blockly return empty")\n'+
+  '    return ret'+'\n' +
+  '  end'+'\n' +
   statements_ai_functions + '\n'+
   '  if table_length(skill_ret) == 0 then \n'+
-  '    return\n'+
-  '  for key, value in  skill_ret do \n'+
+  '    print("blockly empty skill run...")\n'+
+  '    return ret\n'+
+  '  end\n'+
+  '  for key, value in ipairs(skill_ret) do \n'+
+  '    print("blockly check result key:",key) \n'+
   and + '\n'+
+  '  end\n'+
   statements_ai_events +'\n'+
+  '  print("return ret"..ret)\n'+
   '  return ret'+'\n' +
   'end'+'\n'
   ;
@@ -71,23 +92,18 @@ Blockly.Lua['result_run_rule'] = function(block) {
 Blockly.Lua['region_set'] = function(block) {
   var text_title = block.getFieldValue('title');
   var text_des = block.getFieldValue('des');
-  var value_xy_arrays = Blockly.Lua.valueToCode(block, 'xy_arrays', Blockly.Lua.ORDER_ATOMIC);
-  var region = Blockly.Lua.provideFunction_("region", [
-      "function " + Blockly.Lua.FUNCTION_NAME_PLACEHOLDER_ + "(xys)",
-      "  region = xys",
-      "end"]
-      ),
-      code = region+'({'+value_xy_arrays+'})'+'\n';
+  var value_region_arrays = Blockly.Lua.valueToCode(block, 'region_arrays', Blockly.Lua.ORDER_ATOMIC);
+  var code = 'region={'+value_region_arrays+'}\n';
   return code;
 };
 Blockly.Lua['sensitive_high'] = function(block) {
   var text_title = block.getFieldValue('title');
-  var code = '0.8';
+  var code = '0.2';
   return [code, Blockly.Lua.ORDER_HIGH];
 };
 Blockly.Lua['sensitive_low'] = function(block) {
   var text_title = block.getFieldValue('title');
-  var code = '0.2';
+  var code = '0.8';
   return [code, Blockly.Lua.ORDER_HIGH];
 };
 Blockly.Lua['sensitive_medium'] = function(block) {
@@ -97,7 +113,7 @@ Blockly.Lua['sensitive_medium'] = function(block) {
 };
 Blockly.Lua['sensitive_select'] = function(block) {
   var value_select = Blockly.Lua.valueToCode(block, 'select', Blockly.Lua.ORDER_ATOMIC)||'=0.5';
-  var sensitive = Blockly.Lua.provideFunction_("sensitive", [
+  var sensitive = Blockly.Lua.provideFunction_("sensitive_select", [
     "function " + Blockly.Lua.FUNCTION_NAME_PLACEHOLDER_ + "(s)",
     "  sensitive = s",
     "end"]
@@ -141,6 +157,16 @@ Blockly.Lua['xy'] = function(block) {
   }
   return [code, Blockly.Lua.ORDER_ATOMIC];
 };
+Blockly.Lua['region'] = function(block) {
+  var text_title = block.getFieldValue('title');
+  var value_xy_arrays = Blockly.Lua.valueToCode(block, 'xy_arrays', Blockly.Lua.ORDER_ATOMIC);
+  var value_next_region = Blockly.Lua.valueToCode(block, 'next_region', Blockly.Lua.ORDER_ATOMIC) || "";
+    var code = '{'+value_xy_arrays+"}";
+    if(value_next_region.length > 0){
+        code = code+","+value_next_region;
+    }
+  return [code, Blockly.Lua.ORDER_ATOMIC];
+};
 Blockly.Lua['human_detect'] = function(block) {
   var text_title = block.getFieldValue('title');
   var text_des = block.getFieldValue('des');
@@ -153,11 +179,16 @@ Blockly.Lua['human_detect'] = function(block) {
     "    local y = value[\"rect\"][\"y\"]/base.h",
     "    local w = value[\"rect\"][\"w\"]/base.w",
     "    local h = value[\"rect\"][\"h\"]/base.h",
-    "    local conf = qai_check_in_area(x, y, w, h, region)",
-    "    if conf > (1-sensitive) then",
-    "      ret = \"qai_human_motion\"",
-    "      skill_ret[\"human_detect\"] = true",
-    "      return",
+    "    local sen_ret = value[\"rect\"][\"conf\"]",
+    "    if sen_ret > sensitive then",
+    "      local conf = 1",
+    "      if next(region) ~= nil then",
+    "        conf = qai_check_in_area(x, y, w, h, region)",
+    "      end",
+    "      if conf > 0.5 then",
+    "        ret = \"qai_human_motion\"",
+    "        skill_ret[\"human_detect\"] = true",
+    "      end",
     "    end",
     "  end",
     "end"]

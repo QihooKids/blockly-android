@@ -11,6 +11,7 @@
     <block type="time_available3"></block>
     <block type="time_available_select"></block>
     <block type="time_duration_set"></block>
+    <block type="region"></block>
     <block type="xy"></block>
     <block type="ailab_root_block"></block>
   </category>

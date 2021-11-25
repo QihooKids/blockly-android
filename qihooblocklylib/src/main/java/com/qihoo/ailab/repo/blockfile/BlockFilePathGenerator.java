@@ -18,7 +18,7 @@ public class BlockFilePathGenerator implements IPathGenerator {
     public BlockFilePathGenerator(Context context, AIRule rule){
         this.mContext = context.getApplicationContext();
         this.PATH = PATH+"/"+rule.getId();
-        this.mBase = mContext.getExternalCacheDir();
+        this.mBase = mContext.getFilesDir();
     }
 
     @Override

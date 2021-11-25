@@ -27,10 +27,11 @@ import java.util.Set;
 public class RuleWorkspace {
 
     private final Context mContext;
-    private Block mRoot;
+    protected Block mRoot;
     private BlocklyCategory mToolbox;
     private BlockUIStack mBlockUIStack = new BlockUIStack();
-    private NUIBlockHelper mHelper;
+    protected NUIBlockHelper mHelper;
+    private RegionBlockHelper mRegionHelper;
 
     public RuleWorkspace(Context context) {
         this.mContext = context;
@@ -49,8 +50,60 @@ public class RuleWorkspace {
         mToolbox = block.getToolbox();
         mBlockUIStack.put(mRoot, getAllBlocksThisUI(mRoot));
         mHelper = block.getHelper();
+        mRegionHelper = new RegionBlockHelper(this);
     }
 
+    public Block getBlockById(String id){
+        return getBlockById(mRoot, id);
+    }
+
+    protected Block getBlockById(Block rootBlock, String id){
+        if(TextUtils.isEmpty(id)){
+            return null;
+        }
+
+        if(id.equals(rootBlock.getId())){
+            return rootBlock;
+        }
+        List<Input> inputList = rootBlock.getInputs();
+        int inputCount = inputList.size();
+        for (int i = 0; i < inputCount; ++i) {
+            Input input = inputList.get(i);
+            Block connectedBlock = input.getConnectedBlock();
+            if (connectedBlock != null) {
+                if(id.equals(connectedBlock.getId())){
+                    return connectedBlock;
+                } else {
+                    Block next = getBlockById(connectedBlock, id);
+                    if(next != null){
+                        return next;
+                    }
+                }
+            }
+        }
+
+        Connection nextConnection = rootBlock.getNextConnection();
+        if (nextConnection != null) {
+            Block next = nextConnection.getTargetBlock();
+            if (next != null) {
+                if(id.equals(next.getId())){
+                    return next;
+                } else {
+                    next = getBlockById(next, id);
+                    if(next != null){
+                        return next;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Block only support for one block contains one value input or multi statementInput.
+     * @param block
+     * @return
+     */
     public List<Block> getAllBlocksThisUI(Block block) {
         List<Block> blocks = new ArrayList<>();
         if(block != null) {
@@ -73,23 +126,30 @@ public class RuleWorkspace {
         if (mBlockUIStack.size() > 0) {// Root block ui
             Block block = mBlockUIStack.peekUIBlockById(id, type);
             if (block != null) {
-                Input input = block.getOnlyValueInput();
-                if (input != null) {
-                    String[] checks = null;
-                    if (input.getConnection() != null) {
-                        checks = input.getConnection().getConnectionChecks();
-                    }
-                    if (checks != null && checks.length > 0) {
-                        String check = checks[0];
-                        List<Block> candidates = getCandidateBlocks(check);
-                        if (candidates.size() > 0) {
-                            return new Pair<>(block, candidates);
-                        }
+                return new Pair<>(block, getCandidateBlocks(block));
+            }
+        }
+        connectCandidatesToRoot(id, type);
+        return null;
+    }
+
+    protected List<Block> getCandidateBlocks(Block block){
+        if (block != null) {
+            Input input = block.getOnlyValueInput();
+            if (input != null) {
+                String[] checks = null;
+                if (input.getConnection() != null) {
+                    checks = input.getConnection().getConnectionChecks();
+                }
+                if (checks != null && checks.length > 0) {
+                    String check = checks[0];
+                    List<Block> candidates = getCandidateBlocks(check);
+                    if (candidates.size() > 0) {
+                        return candidates;
                     }
                 }
             }
         }
-        connectCandidatesToRoot(id, type);
         return null;
     }
 
@@ -187,55 +247,14 @@ public class RuleWorkspace {
         }
     }
 
-    public int onBlockConnectRegion(String blockId, String blockType, String json) {
-        Block block = mBlockUIStack.peekUIBlockById(blockId, blockType);
-        if(block == null || block.getOnlyValueInput() == null || block.getOnlyValueInput().getConnection()==null){
-            return -1;
-        }
-        Connection connection = block.getOnlyValueInput().getConnection();
-        try {
-            JSONArray array = new JSONArray(json);
-            String type = getOnlyValueCheckType(block);
-            if (type == null) {
-                return -1;
-            }
-            Block root = null;
-            Block xy = null;
-            Block last = null;
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.optJSONObject(i);
-                if (object != null) {
-                    xy = mHelper.obtainBlockByType(type);
-                    if(root == null){
-                        root = xy;
-                    }
-                    double x = object.optDouble("x");
-                    double y = object.optDouble("y");
-                    NUIBlockHelper.setNumber(xy, "x", x);
-                    NUIBlockHelper.setNumber(xy, "y", y);
-                    if (last != null) {
-                        Connection conn = last.getOnlyValueInput().getConnection();
-                        if (conn != null) {
-                            conn.connect(xy.getOutputConnection());
-                        }
-                    }
-                    last = xy;
-                }
-            }
-            if (root != null && connection != null) {
-                connection.disconnect();
-                connection.connect(root.getOutputConnection());
-                return 0;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return -1;
+
+
+    public String getOnlyValueCheckType(Block block) {
+        Input input = block.getOnlyValueInput();
+        return getInputCheckType(input);
     }
 
-
-    private String getOnlyValueCheckType(Block block) {
-        Input input = block.getOnlyValueInput();
+    public String getInputCheckType(Input input) {
         if (input != null) {
             Connection con = input.getConnection();
             if (con != null) {
@@ -249,7 +268,7 @@ public class RuleWorkspace {
     }
 
     public int onTimeDuration(String blockId, String blockType, String json) {
-        Block block = mBlockUIStack.peekUIBlockById(blockId, blockType);
+        Block block = getBlockById(blockId);//mBlockUIStack.peekUIBlockById(blockId, blockType);
         try {
             JSONObject jsonObject = new JSONObject(json);
             Iterator<String> it = jsonObject.keys();
@@ -282,5 +301,66 @@ public class RuleWorkspace {
             }
         }
         return -1;
+    }
+
+    public Block getBlock(String id, String type) {
+        if(id == null && type == null){
+            return mRoot;
+        }
+        if (mBlockUIStack.size() > 0) {// Root block ui
+            Block block = mBlockUIStack.peekUIBlockById(id, type);
+            return block;
+        }
+        return null;
+    }
+
+    /**
+     * Get the block input data to select.
+     * @param id
+     * @return The blocks for select.
+     */
+    public Pair<Block, List<Block>> getSelectBlocks(String id) {
+        if(!TextUtils.isEmpty(id)) {
+            Block block = getBlockById(id);
+            if (block != null) {
+                return new Pair<>(block, getCandidateBlocks(block));
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Connect a new child to parent block.
+     * @param blockId The parent block id.
+     * @param newType The child block type.
+     * @return
+     */
+    public Block onBlockSelected(String blockId, String newType) {
+        Block block = getBlockById(blockId);
+        if(block != null && !TextUtils.isEmpty(newType)){
+            Block newBlock = mHelper.obtainBlockByType(newType);
+            if(newBlock != null && newBlock.getOutputConnection()!= null) {
+                newBlock.getOutputConnection().disconnect();
+                Connection parentConnect = block.getOnlyValueInput().getConnection();
+                if(parentConnect != null) {
+                    parentConnect.disconnect();
+                    parentConnect.connect(newBlock.getOutputConnection());
+                    return newBlock;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Block obtainBlockByType(String type) {
+        return mHelper.obtainBlockByType(type);
+    }
+
+    public int onBlockConnectRegion(String blockId, String blockType, String json) {
+        return mRegionHelper.onBlockConnectRegion(blockId, blockType, json);
+    }
+
+    public RegionBlockHelper getRegionHelper() {
+        return mRegionHelper;
     }
 }

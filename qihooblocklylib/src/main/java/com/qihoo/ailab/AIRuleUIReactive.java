@@ -1,6 +1,7 @@
 package com.qihoo.ailab;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -14,6 +15,8 @@ import com.qihoo.ailab.repo.RuleDataRepo;
 import com.qihoo.ailab.util.L;
 import com.qihoo.ailab.util.NUIBlockHelper;
 
+import org.json.JSONException;
+
 import java.util.List;
 
 /**
@@ -25,7 +28,7 @@ public class AIRuleUIReactive {
 
     private final Context mContext;
     private final WorkspaceFactory mWM;
-    private final UIJsonParser mUIJsonParser;
+    private UIJsonParser mUIJsonParser;
     private final RuleDataRepo mRepo;
     private final AIRule mRule;
     private final String mRuleId;
@@ -36,7 +39,6 @@ public class AIRuleUIReactive {
     public AIRuleUIReactive(Context context, AIRule aiRule){
         this.mContext = context;
         mWM = new WorkspaceFactory(context);
-        mUIJsonParser = new UIJsonParser();
         mRepo = new RuleDataRepo(context, aiRule);
         this.mRule = aiRule;
         this.mRuleId = aiRule.getId();
@@ -51,6 +53,7 @@ public class AIRuleUIReactive {
         mWorkspace.addRootBlock(block);
         mHelper = block.getHelper();
         mFileData = block.getFiles();
+        mUIJsonParser = new UIJsonParser(mWorkspace);
         onResume();
     }
 
@@ -61,7 +64,7 @@ public class AIRuleUIReactive {
      */
     public String getRuleSettingsJson(){
         try {
-            return mUIJsonParser.parseTree(mWorkspace.getRootBlock());
+            return getBlockDataJson(null, null);
         }catch (Exception e){
             e.printStackTrace();
             reload();
@@ -74,16 +77,64 @@ public class AIRuleUIReactive {
      * The next ui message will be returned when the block clicked.
      * @param blockId The block id when selected.
      * @return The next ui message for show.
+     * @deprecated To use getSelectBlocks() and onBlockSelected instead.
      */
     public String onBlockNext(String blockId, String blockType){
         try {
             Pair<Block, List<Block>> pair = mWorkspace.onSelectNext(blockId, blockType);
             if(pair != null) {
-                mUIJsonParser.parseBlockCandidates(pair.first, pair.second);
+                return mUIJsonParser.parseBlockCandidates(pair.first, pair.second);
             }
-        } catch (BlockConnectException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             reload();
+        }
+        return "";
+    }
+
+
+    /**
+     * Get the next page blocks to show by current block id.
+     * @param id The block id of click block.
+     * @return The next page block data.
+     */
+    public String getSelectBlocks(@NonNull String id){
+        try {
+            Pair<Block, List<Block>> pair = mWorkspace.getSelectBlocks(id);
+            if(pair != null) {
+                return mUIJsonParser.parseBlockCandidates(pair.first, pair.second);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            reload();
+        }
+        return "";
+    }
+
+    /**
+     * Connect the selected block type to the parent block.
+     * @param id The parent block id.
+     * @param type The new block type selected to obtain.
+     * @return The selected block data.
+     */
+    public String onBlockSelected(@NonNull String id, @NonNull String type){
+        try {
+            Block block = mWorkspace.onBlockSelected(id, type);
+            if(block != null) {
+                return mUIJsonParser.parseBlock(block).toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            reload();
+        }
+        return "";
+    }
+
+    public String getBlockDataJson(String blockId, String blockType){
+        try {
+            return mUIJsonParser.parseBlock(mWorkspace.getBlock(blockId, blockType)).toString();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return "";
     }
@@ -110,7 +161,6 @@ public class AIRuleUIReactive {
     public void onBackPressed(){
         mWorkspace.onBackPressed();
     }
-
 
 
     /**
@@ -182,7 +232,7 @@ public class AIRuleUIReactive {
     /**
      *
      * When the region selected will callback this method.
-     * [{"x":0.11231,"y":0.1},{"x":0.1232131,"y":0.1},{"x":0.1123123,"y":0.1}],[{"x":0.1,"y":0.1},{"x":0.1,"y":0.1},{"x":0.1,"y":0.1}]
+     * [[{"x":0.11231,"y":0.1},{"x":0.1232131,"y":0.1},{"x":0.1123123,"y":0.1}],[{"x":0.1,"y":0.1},{"x":0.1,"y":0.1},{"x":0.1,"y":0.1}]]
      * @param json
      * @return 0 success,otherwise failed.
      */
